@@ -1,49 +1,4 @@
 ﻿  DatabaseLibrary.cpp
-c:\users\chuck debenon\source\repos\teamprojectone\team project one\team project one\databaselibrary.cpp(8): warning C4273: 'DatabaseLibrary::Record::Record': inconsistent dll linkage
-  c:\users\chuck debenon\source\repos\teamprojectone\team project one\team project one\databaselibrary.h(19): note: see previous definition of '{ctor}'
-c:\users\chuck debenon\source\repos\teamprojectone\team project one\team project one\databaselibrary.cpp(11): warning C4273: 'DatabaseLibrary::Record::getSize': inconsistent dll linkage
-  c:\users\chuck debenon\source\repos\teamprojectone\team project one\team project one\databaselibrary.h(20): note: see previous definition of 'getSize'
-c:\users\chuck debenon\source\repos\teamprojectone\team project one\team project one\databaselibrary.cpp(20): warning C4273: 'DatabaseLibrary::Table::Table': inconsistent dll linkage
-  c:\users\chuck debenon\source\repos\teamprojectone\team project one\team project one\databaselibrary.h(29): note: see previous definition of '{ctor}'
-c:\users\chuck debenon\source\repos\teamprojectone\team project one\team project one\databaselibrary.cpp(23): warning C4273: 'DatabaseLibrary::Table::Table': inconsistent dll linkage
-  c:\users\chuck debenon\source\repos\teamprojectone\team project one\team project one\databaselibrary.h(30): note: see previous definition of '{ctor}'
-c:\users\chuck debenon\source\repos\teamprojectone\team project one\team project one\databaselibrary.cpp(26): warning C4273: 'DatabaseLibrary::Table::addAttribute': inconsistent dll linkage
-  c:\users\chuck debenon\source\repos\teamprojectone\team project one\team project one\databaselibrary.h(31): note: see previous definition of 'addAttribute'
-c:\users\chuck debenon\source\repos\teamprojectone\team project one\team project one\databaselibrary.cpp(30): warning C4273: 'DatabaseLibrary::Table::deleteAttribute': inconsistent dll linkage
-  c:\users\chuck debenon\source\repos\teamprojectone\team project one\team project one\databaselibrary.h(33): note: see previous definition of 'deleteAttribute'
-c:\users\chuck debenon\source\repos\teamprojectone\team project one\team project one\databaselibrary.cpp(34): warning C4273: 'DatabaseLibrary::Table::insertRecord': inconsistent dll linkage
-  c:\users\chuck debenon\source\repos\teamprojectone\team project one\team project one\databaselibrary.h(34): note: see previous definition of 'insertRecord'
-c:\users\chuck debenon\source\repos\teamprojectone\team project one\team project one\databaselibrary.cpp(38): warning C4273: 'DatabaseLibrary::Table::getAttributes': inconsistent dll linkage
-  c:\users\chuck debenon\source\repos\teamprojectone\team project one\team project one\databaselibrary.h(35): note: see previous definition of 'getAttributes'
-c:\users\chuck debenon\source\repos\teamprojectone\team project one\team project one\databaselibrary.cpp(44): warning C4273: 'DatabaseLibrary::Table::getSize': inconsistent dll linkage
-  c:\users\chuck debenon\source\repos\teamprojectone\team project one\team project one\databaselibrary.h(36): note: see previous definition of 'getSize'
-c:\users\chuck debenon\source\repos\teamprojectone\team project one\team project one\databaselibrary.cpp(48): warning C4273: 'DatabaseLibrary::Table::getRecord': inconsistent dll linkage
-  c:\users\chuck debenon\source\repos\teamprojectone\team project one\team project one\databaselibrary.h(37): note: see previous definition of 'getRecord'
-c:\users\chuck debenon\source\repos\teamprojectone\team project one\team project one\databaselibrary.cpp(53): warning C4273: 'DatabaseLibrary::Table::setKey': inconsistent dll linkage
-  c:\users\chuck debenon\source\repos\teamprojectone\team project one\team project one\databaselibrary.h(39): note: see previous definition of 'setKey'
-c:\users\chuck debenon\source\repos\teamprojectone\team project one\team project one\databaselibrary.cpp(57): warning C4273: 'DatabaseLibrary::Table::crossJoin': inconsistent dll linkage
-  c:\users\chuck debenon\source\repos\teamprojectone\team project one\team project one\databaselibrary.h(40): note: see previous definition of 'crossJoin'
-c:\users\chuck debenon\source\repos\teamprojectone\team project one\team project one\databaselibrary.cpp(62): warning C4273: 'DatabaseLibrary::Table::naturalJoin': inconsistent dll linkage
-  c:\users\chuck debenon\source\repos\teamprojectone\team project one\team project one\databaselibrary.h(41): note: see previous definition of 'naturalJoin'
-c:\users\chuck debenon\source\repos\teamprojectone\team project one\team project one\databaselibrary.cpp(67): warning C4273: 'DatabaseLibrary::Table::count': inconsistent dll linkage
-  c:\users\chuck debenon\source\repos\teamprojectone\team project one\team project one\databaselibrary.h(42): note: see previous definition of 'count'
-c:\users\chuck debenon\source\repos\teamprojectone\team project one\team project one\databaselibrary.cpp(71): warning C4273: 'DatabaseLibrary::Table::getMax': inconsistent dll linkage
-  c:\users\chuck debenon\source\repos\teamprojectone\team project one\team project one\databaselibrary.h(43): note: see previous definition of 'getMax'
-c:\users\chuck debenon\source\repos\teamprojectone\team project one\team project one\databaselibrary.cpp(75): warning C4273: 'DatabaseLibrary::Table::getMin': inconsistent dll linkage
-  c:\users\chuck debenon\source\repos\teamprojectone\team project one\team project one\databaselibrary.h(44): note: see previous definition of 'getMin'
-c:\users\chuck debenon\source\repos\teamprojectone\team project one\team project one\databaselibrary.cpp(79): warning C4273: 'DatabaseLibrary::Database::Database': inconsistent dll linkage
-  c:\users\chuck debenon\source\repos\teamprojectone\team project one\team project one\databaselibrary.h(52): note: see previous definition of '{ctor}'
-c:\users\chuck debenon\source\repos\teamprojectone\team project one\team project one\databaselibrary.cpp(82): warning C4273: 'DatabaseLibrary::Database::addTable': inconsistent dll linkage
-  c:\users\chuck debenon\source\repos\teamprojectone\team project one\team project one\databaselibrary.h(53): note: see previous definition of 'addTable'
-c:\users\chuck debenon\source\repos\teamprojectone\team project one\team project one\databaselibrary.cpp(86): warning C4273: 'DatabaseLibrary::Database::dropTable': inconsistent dll linkage
-  c:\users\chuck debenon\source\repos\teamprojectone\team project one\team project one\databaselibrary.h(54): note: see previous definition of 'dropTable'
-c:\users\chuck debenon\source\repos\teamprojectone\team project one\team project one\databaselibrary.cpp(90): warning C4273: 'DatabaseLibrary::Database::printTableNames': inconsistent dll linkage
-  c:\users\chuck debenon\source\repos\teamprojectone\team project one\team project one\databaselibrary.h(55): note: see previous definition of 'printTableNames'
-c:\users\chuck debenon\source\repos\teamprojectone\team project one\team project one\databaselibrary.cpp(96): warning C4273: 'DatabaseLibrary::Database::getTables': inconsistent dll linkage
-  c:\users\chuck debenon\source\repos\teamprojectone\team project one\team project one\databaselibrary.h(56): note: see previous definition of 'getTables'
-c:\users\chuck debenon\source\repos\teamprojectone\team project one\team project one\databaselibrary.cpp(103): warning C4273: 'DatabaseLibrary::Database::query': inconsistent dll linkage
-  c:\users\chuck debenon\source\repos\teamprojectone\team project one\team project one\databaselibrary.h(57): note: see previous definition of 'query'
-c:\users\chuck debenon\source\repos\teamprojectone\team project one\team project one\databaselibrary.cpp(17): warning C4172: returning address of local variable or temporary: returnValue
      Creating library C:\Users\Chuck Debenon\Source\Repos\TeamProjectOne\Team Project One\Debug\Team Project One.lib and object C:\Users\Chuck Debenon\Source\Repos\TeamProjectOne\Team Project One\Debug\Team Project One.exp
   Team Project One.vcxproj -> C:\Users\Chuck Debenon\Source\Repos\TeamProjectOne\Team Project One\Debug\Team Project One.dll
   Team Project One.vcxproj -> C:\Users\Chuck Debenon\Source\Repos\TeamProjectOne\Team Project One\Debug\Team Project One.pdb (Full PDB)

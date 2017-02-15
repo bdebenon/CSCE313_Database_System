@@ -13,8 +13,8 @@ namespace DatabaseLibrary
 	}
 	std::string & Record::operator[](const std::string index)
 	{
-		std::string returnValue = "Empty Return";
-		return returnValue;
+		auto value = entries.find(index);
+		return value->second;
 	}
 	Table::Table()
 	{

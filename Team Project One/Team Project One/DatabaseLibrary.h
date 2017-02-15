@@ -3,28 +3,24 @@
 #include<map>
 #pragma once  
 
-#ifdef DATABASELIBRARY_EXPORTS  
 #define DATABASELIBRARY_API __declspec(dllexport)   
-#else  
-#define DATABASELIBRARY_API __declspec(dllimport)   
-#endif  
 
 namespace DatabaseLibrary
 {
 	class Record {
 	private:
-		static DATABASELIBRARY_API int size;
-		static DATABASELIBRARY_API std::map<std::string, std::string> entries;
+		int size;
+		std::map<std::string, std::string> entries;
 	public:
 		DATABASELIBRARY_API Record(int s);
 		static DATABASELIBRARY_API int getSize();
-		std::string& operator[](const std::string index);
+		DATABASELIBRARY_API std::string& operator[](const std::string index);
 	};
 
 	class Table {
 	private:
-		static DATABASELIBRARY_API std::set<std::string> attributes;
-		static DATABASELIBRARY_API std::set<Record*> records;
+		std::set<std::string> attributes;
+		std::set<Record*> records;
 	public:
 		DATABASELIBRARY_API Table(); //Create table with no rows or columns
 		DATABASELIBRARY_API Table(std::set<std::string> names); //attribute names
@@ -47,7 +43,7 @@ namespace DatabaseLibrary
 	// This class is exported from the MathLibrary.dll  
 	class Database {
 	private:
-		static DATABASELIBRARY_API std::set<Table*> tables;
+		std::set<Table*> tables;
 	public:
 		DATABASELIBRARY_API Database(); //Creates Empty Database
 		static DATABASELIBRARY_API void addTable(Table* t, std::string name); //Adds table t to database
@@ -69,3 +65,18 @@ namespace DatabaseLibrary
 *
 *(2) - Query Command: Returns a table. Takes in three string arguments, SELECT, FROM, and WHERE.
 */
+
+/*----------Start Error Codes----------*
+*
+*0 - attribute_exists
+*1 - invalid_table
+*2 - empty_database
+*3 - empty_table
+*4 - table_not_found
+*5 - record_not_found
+*6 - attribute_not_found
+*7 - attribute_list_error
+*8 - mismatched_tables
+*9 - out_of_range
+*
+*----------End Error Codes----------*/
