@@ -1,6 +1,9 @@
 //DatabaseLibrary.h - Contains declaration of Function class  
 #include<set>
 #include<map>
+#include<exception>
+#include<iostream>
+#include<vector>
 #pragma once  
 
 #define DATABASELIBRARY_API __declspec(dllexport)   
@@ -10,27 +13,33 @@ namespace DatabaseLibrary
 	class Record {
 	private:
 		int size;
-		std::map<std::string, std::string> entries;
+		std::string *entries;
+		std::map<std::string, std::string> attrEntryMap;
 	public:
 		DATABASELIBRARY_API Record(int s);
+		DATABASELIBRARY_API ~Record();
 		DATABASELIBRARY_API int getSize();
-		DATABASELIBRARY_API std::string& operator[](const std::string index);
+		DATABASELIBRARY_API std::string& operator[](size_t index);
+		DATABASELIBRARY_API const std::string& operator[](size_t index) const;
+		DATABASELIBRARY_API void setMap(std::vector<std::string> attributes);
+		DATABASELIBRARY_API std::string getKeyVal(std::string s);
 	};
 
 	class Table {
 	private:
-		std::set<std::string> attributes;
+		std::vector<std::string> attributes;
 		std::set<Record*> records;
+		std::string key;
 	public:
 		DATABASELIBRARY_API Table(); //Create table with no rows or columns
-		DATABASELIBRARY_API Table(std::set<std::string> names); //attribute names
+		DATABASELIBRARY_API Table(std::vector<std::string> names); //attribute names
 		DATABASELIBRARY_API void addAttribute(std::string name);	//adds column to END of table with that new attrib
 																		//entries currently in table get NULL for this attrib
 		DATABASELIBRARY_API void deleteAttribute(std::string name);
 		DATABASELIBRARY_API void insertRecord(Record* r);
-		DATABASELIBRARY_API std::set<std::string> getAttributes(); //Returns a list of the attributes for a table, in order
+		DATABASELIBRARY_API std::vector<std::string> getAttributes(); //Returns a list of the attributes for a table, in order
 		DATABASELIBRARY_API int getSize(); //returns number of records
-		DATABASELIBRARY_API Record* getRecord(std::string key);	//An iterator of some sort that can be used to return individual records from the 
+		DATABASELIBRARY_API Record* getRecord(std::string k);	//An iterator of some sort that can be used to return individual records from the 
 																		//table. There are many ways this can be done.
 		DATABASELIBRARY_API void setKey(std::string attribName); //Allows attribute name to be designeded as a key for the table
 		DATABASELIBRARY_API Table* crossJoin(Table* t1, Table* t2); //Takes two tables as input and produces one as output
