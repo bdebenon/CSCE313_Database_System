@@ -1,5 +1,9 @@
 ﻿################################################################################
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
-
 /Team Project One/Team Project One.VC.VC.opendb
+/Team Project One/DatabaseLibrary.VC.db
+/Team Project One/Team Project One.VC.db
+/Team Project One/Debug/**
+/Team Project One/ipch/**
+/Team Project One/Team Project One/Debug/**
