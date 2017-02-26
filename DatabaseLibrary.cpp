@@ -13,7 +13,7 @@ namespace DatabaseLibrary
 			entries = new std::string[size];
 			for (int i = 0; i < size; i++) {
 				entries[i] = "-1";
-			}
+			}		
 		}
 	}
 
