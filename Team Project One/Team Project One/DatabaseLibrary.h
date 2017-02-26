@@ -12,13 +12,13 @@ namespace DatabaseLibrary
 {
 	class Record {
 	private:
-		int size;
+		size_t size;
 		std::string *entries;
 		std::map<std::string, std::string> attrEntryMap;
 	public:
-		DATABASELIBRARY_API Record(int s);
+		DATABASELIBRARY_API Record(size_t s);
 		DATABASELIBRARY_API ~Record();
-		DATABASELIBRARY_API int getSize();
+		DATABASELIBRARY_API size_t getSize();
 		DATABASELIBRARY_API std::string& operator[](size_t index);
 		DATABASELIBRARY_API const std::string& operator[](size_t index) const;
 		DATABASELIBRARY_API void setMap(std::vector<std::string> attributes);
@@ -38,13 +38,13 @@ namespace DatabaseLibrary
 		DATABASELIBRARY_API void deleteAttribute(std::string name);
 		DATABASELIBRARY_API void insertRecord(Record* r);
 		DATABASELIBRARY_API std::vector<std::string> getAttributes(); //Returns a list of the attributes for a table, in order
-		DATABASELIBRARY_API int getSize(); //returns number of records
+		DATABASELIBRARY_API size_t getSize(); //returns number of records
 		DATABASELIBRARY_API Record* getRecord(std::string k);	//An iterator of some sort that can be used to return individual records from the 
 																		//table. There are many ways this can be done.
 		DATABASELIBRARY_API void setKey(std::string attribName); //Allows attribute name to be designeded as a key for the table
 		DATABASELIBRARY_API Table* crossJoin(Table* t1, Table* t2); //Takes two tables as input and produces one as output
 		DATABASELIBRARY_API Table* naturalJoin(Table* t1, Table* t2); //See Note(1) at bottom
-		DATABASELIBRARY_API int count(std::string attribName); //Counts non-null entries
+		DATABASELIBRARY_API size_t count(std::string attribName); //Counts non-null entries
 		DATABASELIBRARY_API std::string getMax(std::string attribName);
 		DATABASELIBRARY_API std::string getMin(std::string attribName);
 	};

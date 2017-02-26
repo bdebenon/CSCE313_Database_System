@@ -4,7 +4,7 @@
 
 namespace DatabaseLibrary
 {
-	Record::Record(int s)
+	Record::Record(size_t s)
 	{
 		size = s;
 		entries = NULL;
@@ -21,7 +21,7 @@ namespace DatabaseLibrary
 		delete[] entries;
 	}
 
-	int Record::getSize()
+	size_t Record::getSize()
 	{
 		return size;
 	}
@@ -149,7 +149,7 @@ namespace DatabaseLibrary
 		return attributes;
 	}
 
-	int Table::getSize()
+	size_t Table::getSize()
 	{
 		//number of records
 		return records.size();
@@ -222,9 +222,30 @@ namespace DatabaseLibrary
 		return tableEntry;
 	}
 
-	int Table::count(std::string attribName)
+	size_t Table::count(std::string attribName)
 	{
-		return 5;
+		try {
+			//check if attribute exists
+			if ((std::find(attributes.begin(), attributes.end(), attribName) == attributes.end())) {
+				throw 1;
+			}
+			else {
+				size_t count = 0;
+				for (auto it = records.begin(); it != records.end(); ++it) {
+					Record* r = *it;
+					if (r->getKeyVal(attribName) != "-1") {
+						count++;
+					}
+				}
+				return count;
+			}
+		}
+		catch (int i) {
+			std::cout << "attribute_not_found" << std::endl;
+		}
+		catch (std::exception& e) {
+			std::cout << e.what() << std::endl;
+		}
 	}
 
 	std::string Table::getMax(std::string attribName)
