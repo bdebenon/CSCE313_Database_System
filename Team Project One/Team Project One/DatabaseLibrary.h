@@ -30,6 +30,7 @@ namespace DatabaseLibrary
 		std::vector<std::string> attributes;
 		std::set<Record*> records;
 		std::string key;
+		int keyIndex;
 	public:
 		DATABASELIBRARY_API Table(); //Create table with no rows or columns
 		DATABASELIBRARY_API Table(std::vector<std::string> names); //attribute names
@@ -41,7 +42,9 @@ namespace DatabaseLibrary
 		DATABASELIBRARY_API size_t getSize(); //returns number of records
 		DATABASELIBRARY_API Record* getRecord(std::string k);	//An iterator of some sort that can be used to return individual records from the 
 																		//table. There are many ways this can be done.
+		DATABASELIBRARY_API std::set<Record*> getRecords();
 		DATABASELIBRARY_API void setKey(std::string attribName); //Allows attribute name to be designeded as a key for the table
+		DATABASELIBRARY_API std::string getKey();
 		DATABASELIBRARY_API Table* crossJoin(Table* t1, Table* t2); //Takes two tables as input and produces one as output
 		DATABASELIBRARY_API Table* naturalJoin(Table* t1, Table* t2); //See Note(1) at bottom
 		DATABASELIBRARY_API size_t count(std::string attribName); //Counts non-null entries
@@ -52,13 +55,13 @@ namespace DatabaseLibrary
 	// This class is exported from the MathLibrary.dll  
 	class Database {
 	private:
-		std::set<Table*> tables;
+		std::map<std::string, Table*> tables;
 	public:
 		DATABASELIBRARY_API Database(); //Creates Empty Database
 		DATABASELIBRARY_API void addTable(Table* t, std::string name); //Adds table t to database
 		DATABASELIBRARY_API void dropTable(std::string name); //Deletes table from database
-		DATABASELIBRARY_API std::set<std::string> printTableNames();
-		DATABASELIBRARY_API std::set<Table*> getTables();
+		DATABASELIBRARY_API std::map<std::string, Table*> printTableNames();
+		DATABASELIBRARY_API std::vector<Table*> getTables();
 		DATABASELIBRARY_API Table* query(std::string SELECT, std::string FROM, std::string WHERE); //See Note (2) at bottom
 	};
 

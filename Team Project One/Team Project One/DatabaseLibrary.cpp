@@ -82,10 +82,10 @@ namespace DatabaseLibrary
 
 	std::string Record::getKeyVal(std::string s) {
 		auto it = attrEntryMap.find(s);
-		if (it == attrEntryMap.end()) {
+		if (it == attrEntryMap.end() || attrEntryMap[s] == "-1") {
 			return "-1";
 		}
-		else {
+		else{
 			return attrEntryMap[s];
 		}
 	}
@@ -99,6 +99,7 @@ namespace DatabaseLibrary
 	{
 		//Consider: find a way to check for duplicates
 		attributes.insert(attributes.begin(), names.begin(), names.end());
+		key = "-1";
 	}
 
 	void Table::addAttribute(std::string name)
@@ -140,8 +141,20 @@ namespace DatabaseLibrary
 
 	void Table::insertRecord(Record* r)
 	{
-		r->setMap(attributes);
-		records.insert(r);
+		try {
+			if (key != "-1"){ //if it has a key, check for an addition of a duplicate key entry
+				for (auto it = records.begin(); it != records.end(); ++it) {
+					if ((*it)->getKeyVal(key) == r[keyIndex]) {
+						throw 1;
+					}
+				}
+			}
+			r->setMap(attributes);
+			records.insert(r);
+		}
+		catch (int i) {
+			std::cout << "duplicate_key_entry" << std::endl;
+		}
 	}
 
 	std::vector<std::string> Table::getAttributes()
@@ -184,11 +197,15 @@ namespace DatabaseLibrary
 
 	void Table::setKey(std::string attribName)
 	{
+		//Consider: when setting a key to an established table, with duplicate entries for that key to-be set
 		try {
 			bool exists = false;
+			int index;
 			for (auto it = attributes.begin(); it != attributes.end(); ++it) {
+				index++;
 				if (*it == attribName) {
 					exists = true;
+					keyIndex = index;
 					break;
 				}
 			}
@@ -209,7 +226,6 @@ namespace DatabaseLibrary
 		}
 	}
 
-	//Not done yet
 	Table* Table::crossJoin(Table* t1, Table* t2)
 	{
 		Table* tableEntry = new Table();
@@ -250,12 +266,34 @@ namespace DatabaseLibrary
 
 	std::string Table::getMax(std::string attribName)
 	{
-		return "Empty Input";
+		//via string comparison
+		std::string max = "";
+		for (auto it = records.begin(); it != records.end(); ++it) {
+			if (it == records.begin()) {
+				max = (*it)->getKeyVal(attribName); //set max to first
+			}
+			if ((*it)->getKeyVal(attribName) > max) { //string comparison
+				max = (*it)->getKeyVal(attribName);
+			}
+		}
+
+		return max;
 	}
 
 	std::string Table::getMin(std::string attribName)
 	{
-		return "Empty Input";
+		//via string comparison
+		std::string min = "";
+		for (auto it = records.begin(); it != records.end(); ++it) {
+			if (it == records.begin()) {
+				min = (*it)->getKeyVal(attribName); //set max to first
+			}
+			if ((*it)->getKeyVal(attribName) < min) { //string comparison
+				min = (*it)->getKeyVal(attribName);
+			}
+		}
+
+		return min;
 	}
 
 	Database::Database()
@@ -264,22 +302,31 @@ namespace DatabaseLibrary
 
 	void Database::addTable(Table * t, std::string name)
 	{
-		return;
+		tables[name] = t;
 	}
 
 	void Database::dropTable(std::string name)
 	{
-		return;
+		try {
+			if (tables.find(name) == tables.end())
+			{
+				throw 1;
+			}
+			else{
+				tables.erase(name);
+			}
+		}
+		catch (int i){
+			std::cout << "table_not_found" << std::endl;
+		}
 	}
 
-	std::set<std::string> Database::printTableNames()
+	std::map<std::string, Table*> Database::printTableNames()
 	{
-		std::set<std::string> tableNames;
-		tableNames.insert("34-28");
-		return tableNames;
+		return tables;
 	}
 
-	std::set<Table*> Database::getTables()
+	std::vector<Table*> Database::getTables()
 	{
 		std::set<Table*> allTables;
 		Table* tBrady = new Table();
