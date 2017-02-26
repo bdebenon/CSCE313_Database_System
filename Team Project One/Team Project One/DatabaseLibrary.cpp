@@ -321,17 +321,16 @@ namespace DatabaseLibrary
 		}
 	}
 
-	std::map<std::string, Table*> Database::printTableNames()
+	std::vector<std::string> Database::printTableNames()
 	{
-		return tables;
+		//return table names
+		
 	}
 
-	std::vector<Table*> Database::getTables()
+	std::map<std::string, Table*> Database::getTables()
 	{
-		std::set<Table*> allTables;
-		Table* tBrady = new Table();
-		allTables.insert(tBrady);
-		return allTables;
+		//return table map
+		return tables;
 	}
 
 	Table * Database::query(std::string SELECT, std::string FROM, std::string WHERE)
