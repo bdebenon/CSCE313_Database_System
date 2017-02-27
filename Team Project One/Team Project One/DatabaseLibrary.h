@@ -62,8 +62,8 @@ namespace DatabaseLibrary
 		DATABASELIBRARY_API Database(); //Creates Empty Database
 		DATABASELIBRARY_API void addTable(Table* t, std::string name); //Adds table t to database
 		DATABASELIBRARY_API void dropTable(std::string name); //Deletes table from database
-		DATABASELIBRARY_API std::map<std::string, Table*> printTableNames();
-		DATABASELIBRARY_API std::vector<Table*> getTables();
+		DATABASELIBRARY_API std::vector<std::string> printTableNames();
+		DATABASELIBRARY_API std::map<std::string, Table*> getTables();
 		DATABASELIBRARY_API Table* query(std::string SELECT, std::string FROM, std::string WHERE); //See Note (2) at bottom
 	};
 

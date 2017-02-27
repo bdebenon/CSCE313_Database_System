@@ -141,7 +141,7 @@ namespace DatabaseLibrary
 		try {
 			if (key != "-1"){ //if it has a key, check for an addition of a duplicate key entry
 				for (auto it = records.begin(); it != records.end(); ++it) {
-					if ((*it)->getKeyVal(key) == r[keyIndex]) {
+					if ((*it)->getKeyVal(key) == (*r)[keyIndex]) {
 						throw 1;
 					}
 				}
@@ -305,17 +305,17 @@ namespace DatabaseLibrary
 								insertion = new Record((*it1)->getSize() + (*it2)->getSize());
 								std::string s = (*it2)->getKeyVal(k);
 								int i = 0;
-								insertion[i] = s;
+								(*insertion)[i] = s;
 
 								for (int i = 0; i < attr.size(); ++i) {
 									for (auto it = (*it1)->attr_begin(); it != (*it1)->attr_end(); ++it) {
-										if (attr[i] == it->first) {
-											insertion[i] = it->second;
+										if (attr[i] == it->first && attr[i] != s) {
+											(*insertion)[i] = it->second;
 										}
 									}
 									for (auto it = (*it2)->attr_begin(); it != (*it2)->attr_end(); ++it) {
-										if (attr[i] == it->first) {
-											insertion[i] = it->second;
+										if (attr[i] == it->first && attr[i] != s) {
+											(*insertion)[i] = it->second;
 										}
 									}
 								}
