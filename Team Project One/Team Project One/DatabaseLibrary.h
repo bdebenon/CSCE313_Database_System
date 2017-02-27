@@ -13,7 +13,7 @@ namespace DatabaseLibrary
 	class Record {
 	private:
 		size_t size;
-		std::string *entries;
+		std::vector<std::string> entries;
 		std::map<std::string, std::string> attrEntryMap;
 	public:
 		DATABASELIBRARY_API Record(size_t s);
@@ -23,6 +23,8 @@ namespace DatabaseLibrary
 		DATABASELIBRARY_API const std::string& operator[](size_t index) const;
 		DATABASELIBRARY_API void setMap(std::vector<std::string> attributes);
 		DATABASELIBRARY_API std::string getKeyVal(std::string s);
+		DATABASELIBRARY_API std::map<std::string, std::string>::iterator attr_begin();
+		DATABASELIBRARY_API std::map<std::string, std::string>::iterator attr_end();
 	};
 
 	class Table {

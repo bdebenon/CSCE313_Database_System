@@ -7,10 +7,7 @@ namespace DatabaseLibrary
 	Record::Record(size_t s)
 	{
 		size = s;
-		entries = NULL;
-
 		if (size != 0) {
-			entries = new std::string[size];
 			for (int i = 0; i < size; i++) {
 				entries[i] = "-1";
 			}		
@@ -18,7 +15,7 @@ namespace DatabaseLibrary
 	}
 
 	Record::~Record() {
-		delete[] entries;
+		entries.clear();
 	}
 
 	size_t Record::getSize()
@@ -31,21 +28,14 @@ namespace DatabaseLibrary
 	std::string& Record::operator[](size_t index)
 	{
 		try {
-			if (index < size) {
-				return entries[index];
-			}
-			else {
-				throw 1;
-			}
-		}
-		catch (int i) {
-			std::cout << "out_of_bounds" << std::endl;
+			entries.at(index);
 		}
 		catch (std::exception& e) {
 			std::cout << e.what() << std::endl;
 		}
 	}
 
+	/*
 	//Access
 	const std::string& Record::operator[](size_t index) const {
 		try {
@@ -63,6 +53,7 @@ namespace DatabaseLibrary
 			std::cout << e.what() << std::endl;
 		}
 	}
+	*/
 
 	void Record::setMap(std::vector<std::string> attributes) {
 		int smaller;
@@ -73,9 +64,7 @@ namespace DatabaseLibrary
 			smaller = getSize();
 		}
 		for (int i = 0; i < smaller; i++) {
-			if (entries[i] != "-1") {
-				attrEntryMap[attributes[i]] = entries[i];
-			}
+			attrEntryMap[attributes[i]] = entries[i];
 		}
 
 	}
@@ -88,6 +77,14 @@ namespace DatabaseLibrary
 		else{
 			return attrEntryMap[s];
 		}
+	}
+
+	std::map<std::string, std::string>::iterator Record::attr_begin() {
+		return attrEntryMap.begin();
+	}
+
+	std::map<std::string, std::string>::iterator Record::attr_end() {
+		return attrEntryMap.end();
 	}
 
 	Table::Table()
@@ -195,6 +192,10 @@ namespace DatabaseLibrary
 		}
 	}
 
+	std::set<Record*> Table::getRecords() {
+		return records;
+	}
+
 	void Table::setKey(std::string attribName)
 	{
 		//Consider: when setting a key to an established table, with duplicate entries for that key to-be set
@@ -226,16 +227,118 @@ namespace DatabaseLibrary
 		}
 	}
 
+	std::string Table::getKey() {
+		return key;
+	}
+
 	Table* Table::crossJoin(Table* t1, Table* t2)
 	{
-		Table* tableEntry = new Table();
+		std::set<Record*> r1 = t1->getRecords();
+		std::set<Record*> r2 = t2->getRecords();
+
+		std::vector<std::string> attr = t1->getAttributes();
+		attr.insert(attr.end(), t2->getAttributes().begin(), t2->getAttributes().end());
+
+		Table* tableEntry = new Table(attr);
+		Record* insertion;
+
+		for (auto it1 = r1.begin(); it1 != r1.end(); ++it1) {
+			for (auto it2 = r2.begin; it2 != r2.end(); ++it2) {
+				insertion = new Record((*it1)->getSize() + (*it2)->getSize());
+				for (int k = 0; k < t1->getAttributes().size(); ++k) {
+					insertion[k] = (*it1)[k];
+				}
+				for (int l = 0; l < t2->getAttributes().size(); ++l) {
+					insertion[l + t1->getAttributes().size()] = (*it2)[l];
+				}
+				tableEntry->insertRecord(insertion);
+			}
+		}
+
 		return tableEntry;
 	}
 
 	Table * Table::naturalJoin(Table* t1, Table* t2)
 	{
-		Table* tableEntry = new Table();
-		return tableEntry;
+		try {
+			std::string k = t2->getKey();
+			if (k == "-1") { //checks if t2 has a key
+				std::cout << "Table two does not have a key" << std::endl;
+				throw 1;
+			}
+			else {
+				std::string k2 = "-1";
+				for (auto it = t1->getAttributes().begin(); it != t1->getAttributes().end(); ++it) {
+					if (*it == k) {
+						k2 = *it;
+						break;
+					}
+				}
+				if (k2 == "-1") { //did not find attribute matching key from t1
+					throw 1;
+				}
+				else {
+					std::set<Record*> r1 = t1->getRecords();
+					std::set<Record*> r2 = t2->getRecords();
+					std::vector<std::string> attr;
+
+					attr.push_back(k);
+					//adds elements of t1 to the attribute list
+					for (auto it = t1->getAttributes().begin(); it != t1->getAttributes().end(); ++it) {
+						if (*it != k) {
+							attr.push_back(*it);
+						}
+					}
+					//adds elements of t2 to the attribute list
+					for (auto it = t2->getAttributes().begin(); it != t2->getAttributes().end(); ++it) {
+						if (*it != k) {
+							attr.push_back(*it);
+						}
+					}
+					Table* tableEntry = new Table(attr);
+					Record* insertion;
+
+					for (auto it2 = r2.begin(); it2 != r2.end(); ++it2) {
+						for (auto it1 = r1.begin(); it1 != r1.end(); ++it1) {
+							if ((*it1)->getKeyVal(k) == (*it2)->getKeyVal(k)) {
+
+								insertion = new Record((*it1)->getSize() + (*it2)->getSize());
+								std::string s = (*it2)->getKeyVal(k);
+								int i = 0;
+								insertion[i] = s;
+
+								for (int i = 0; i < attr.size(); ++i) {
+									for (auto it = (*it1)->attr_begin(); it != (*it1)->attr_end(); ++it) {
+										if (attr[i] == it->first) {
+											insertion[i] = it->second;
+										}
+									}
+									for (auto it = (*it2)->attr_begin(); it != (*it2)->attr_end(); ++it) {
+										if (attr[i] == it->first) {
+											insertion[i] = it->second;
+										}
+									}
+								}
+
+
+								tableEntry->insertRecord(insertion);
+							}
+						}
+					}
+
+				}
+
+			}
+
+
+		}
+		catch (int i) {
+			std::cout << "Tables not a match" << std::endl;
+		}
+		catch (std::exception& e) {
+			std::cout << e.what() << std::endl;
+		}
+
 	}
 
 	size_t Table::count(std::string attribName)
