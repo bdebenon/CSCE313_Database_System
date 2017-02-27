@@ -427,7 +427,11 @@ namespace DatabaseLibrary
 	std::vector<std::string> Database::printTableNames()
 	{
 		//return table names
-		
+		std::vector<std::string> tableNames;
+		for (auto it = tables.begin(); it != tables.end(); ++it) {
+			tableNames.push_back(it->first);
+		}
+		return tableNames;
 	}
 
 	std::map<std::string, Table*> Database::getTables()
