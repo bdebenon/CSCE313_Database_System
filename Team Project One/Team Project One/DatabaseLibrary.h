@@ -4,6 +4,8 @@
 #include<exception>
 #include<iostream>
 #include<vector>
+#include<sstream>
+#include<stack>
 #pragma once  
 
 #define DATABASELIBRARY_API __declspec(dllexport)   
@@ -52,6 +54,10 @@ namespace DatabaseLibrary
 		DATABASELIBRARY_API size_t count(std::string attribName); //Counts non-null entries
 		DATABASELIBRARY_API std::string getMax(std::string attribName);
 		DATABASELIBRARY_API std::string getMin(std::string attribName);
+		DATABASELIBRARY_API std::vector<Record*> stringComparison(std::string s);
+		DATABASELIBRARY_API std::vector<Record*> booleanComparison(std::vector<Record*> v1, std::vector<Record*> v2, std::string op);
+		DATABASELIBRARY_API std::vector<Record*> parse(std::string s);
+		DATABASELIBRARY_API std::pair<std::string, std::string> Table::splitString(std::string, int i, int length);
 	};
 
 	// This class is exported from the MathLibrary.dll  
@@ -65,6 +71,7 @@ namespace DatabaseLibrary
 		DATABASELIBRARY_API std::vector<std::string> printTableNames();
 		DATABASELIBRARY_API std::map<std::string, Table*> getTables();
 		DATABASELIBRARY_API Table* query(std::string SELECT, std::string FROM, std::string WHERE); //See Note (2) at bottom
+		
 	};
 
 }

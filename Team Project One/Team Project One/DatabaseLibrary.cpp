@@ -399,6 +399,243 @@ namespace DatabaseLibrary
 		return min;
 	}
 
+
+	std::pair<std::string, std::string> Table::splitString(std::string s, int i, int length) {
+		std::string left = "";
+		std::string right = "";
+
+		for (int j = 0; j < i; ++j) {
+			if (s[j] != ' ') {
+				left = left + s[j];
+			}
+		}
+		for (int j = i+length; j < s.size(); ++j) {
+			if (s[j] != ' ') {
+				right = right + s[j];
+			}
+		}
+		std::pair<std::string, std::string> p(left, right);
+		return p;
+	}
+
+
+
+	std::vector<Record*> Table::stringComparison(std::string s) {
+		std::vector<Record*> v;
+		if (s[0] == '(') {
+			std::string s2 = "";
+			for (int i = 1; i < s.size() - 1; ++i) {
+				s2 = s2 + s[i];
+			}
+			return stringComparison(s2);
+		}
+		else {
+			for (int i = 0; i < s.size(); ++i) {
+				switch (s[i]) {
+				case '=': {
+					std::pair<std::string, std::string> p = splitString(s, i, 1);
+					std::string attr = p.first;
+					std::string cond = p.second;
+					for (auto it = records.begin(); it != records.end(); ++it) {
+						if ((*it)->getKeyVal(attr) == cond) {
+							v.push_back(*it);
+						}
+					}
+				}
+				case '<': {
+					switch (s[i+1]) {
+					case '>': { //not equal
+						std::pair<std::string, std::string> p = splitString(s, i, 2);
+						std::string attr = p.first;
+						std::string cond = p.second;
+						for (auto it = records.begin(); it != records.end(); ++it) {
+							if ((*it)->getKeyVal(attr) != cond) {
+								v.push_back(*it);
+							}
+						}
+					}
+					case '=':{
+						std::pair<std::string, std::string> p = splitString(s, i, 2);
+						std::string attr = p.first;
+						std::string cond = p.second;
+						for (auto it = records.begin(); it != records.end(); ++it) {
+							if ((*it)->getKeyVal(attr) <= cond) {
+								v.push_back(*it);
+							}
+						}
+					}
+					default: {
+						std::pair<std::string, std::string> p = splitString(s, i, 1);
+						std::string attr = p.first;
+						std::string cond = p.second;
+						for (auto it = records.begin(); it != records.end(); ++it) {
+							if ((*it)->getKeyVal(attr) < cond) {
+								v.push_back(*it);
+							}
+						}
+
+					}
+					}
+				}
+				case '>':{
+					switch (s[i + 1]) {
+					case '=': {
+						std::pair<std::string, std::string> p = splitString(s, i, 2); 
+						std::string attr = p.first;
+						std::string cond = p.second;
+						for (auto it = records.begin(); it != records.end(); ++it) {
+							if ((*it)->getKeyVal(attr) >= cond) {
+								v.push_back(*it);
+							}
+						}
+
+					}
+					default: {
+						std::pair<std::string, std::string> p = splitString(s, i, 1);
+						std::string attr = p.first;
+						std::string cond = p.second;
+						for (auto it = records.begin(); it != records.end(); ++it) {
+							if ((*it)->getKeyVal(attr) > cond) {
+								v.push_back(*it);
+							}
+						}
+					}
+
+					}
+
+				}
+				}
+			}
+		}
+	}
+
+	std::vector<Record*> Table::booleanComparison(std::vector<Record*> v1, std::vector<Record*> v2, char op) {
+		std::vector<Record*> v;
+		switch (op) {
+		case 'A': {
+			for (int i = 0; i < v1.size(); ++i) {
+				for (int j = 0; j < v2.size(); ++j) {
+					if (v1[i] == v2[j]) {
+						v.push_back(v1[i]);
+						break;
+					}
+				}
+			}
+		}
+		case 'N': {
+			bool check = false;
+			for (int i = 0; i < v1.size(); ++i) {
+				for (int j = 0; j < v2.size(); ++j) {
+					if (v1[i] == v2[j]) {
+						check = true;
+					}
+				}
+				if (!check) {
+					v.push_back(v1[i]);
+				}
+				check = false;
+			}
+		}
+		case 'O': {
+			bool check = false;
+			v = v1;
+			for (int i = 0; i < v2.size(); ++i) {
+				for (int j = 0; j < v.size(); ++i) {
+					if (v[i] == v2[j]) {
+						check = true;
+					}
+				}
+				if (!check) {
+					v.push_back(v2[i]);
+				}
+				check = false;
+			}
+		}
+		}
+	}
+
+
+	std::vector<Record*> Table::parse(std::string s) {
+		int par = 0;
+		int b = 0;
+		for (int i = 0; i < s.size(); ++i) {
+			switch (s[i]) {
+			case '(': {
+				++par;
+			}
+			case ')': {
+				--par;
+			}
+			case 'A': {
+				if (s[i - 1] == ' ' && s[i + 1] == 'N' && s[i + 2] == 'D' && s[i + 3] == ' ') {
+					if (par == 0) {
+						std::string left = "";
+						std::string right = "";
+						for (int j = 0; j < i - 1; j++) {
+							left = left + s[j];
+						}
+						for (int j = i + 4; j < s.size(); j++) {
+							right = right + s[j];
+						}
+						return booleanComparison(parse(left), parse(right), 'A');
+					}
+					else {
+						++b;
+					}
+				}
+			}
+			case 'N': {
+				if (s[i - 1] == ' ' && s[i + 1] == 'O' && s[i + 2] == 'T' && s[i + 3] == ' ') {
+					if (par == 0) {
+						std::string left = "";
+						std::string right = "";
+						for (int j = 0; j < i - 1; j++) {
+							left = left + s[j];
+						}
+						for (int j = i + 4; j < s.size(); j++) {
+							right = right + s[j];
+						}
+						return booleanComparison(parse(left), parse(right), 'N');
+					}
+					else {
+						++b;
+					}
+				}
+			}
+			case 'O': {
+				if (s[i - 1] == ' ' && s[i + 1] == 'R' && s[i + 3] == ' ') {
+					if (par == 0) {
+						std::string left = "";
+						std::string right = "";
+						for (int j = 0; j < i - 1; j++) {
+							left = left + s[j];
+						}
+						for (int j = i + 3; j < s.size(); j++) {
+							right = right + s[j];
+						}
+						return booleanComparison(parse(left), parse(right), 'O');
+					}
+					else {
+						++b;
+					}
+				}
+			}
+			}
+		}
+		if (b > 0) {
+			std::string s2 = "";
+			for (int i = 1; i < s.size() - 1; ++i) {
+				s2 = s2 + s[i];
+			}
+			return parse(s2);
+		}
+		else {
+			return stringComparison(s);
+		}
+	}
+
+	
+
 	Database::Database()
 	{
 	}
@@ -422,6 +659,10 @@ namespace DatabaseLibrary
 		catch (int i){
 			std::cout << "table_not_found" << std::endl;
 		}
+		catch (std::exception& e) {
+			std::cout << e.what() << std::endl;
+		}
+
 	}
 
 	std::vector<std::string> Database::printTableNames()
@@ -439,10 +680,83 @@ namespace DatabaseLibrary
 		//return table map
 		return tables;
 	}
+	
+
 
 	Table * Database::query(std::string SELECT, std::string FROM, std::string WHERE)
 	{
-		Table* tBrady = new Table();
-		return tBrady;
+		try {
+			//Checks for balanced parentheses
+			std::stack<char> parenCheck;
+
+			for (int i = 0; i < WHERE.length(); i++) {
+				if (WHERE.at(i) == '(') {
+					parenCheck.push('(');
+				}
+				if (WHERE.at(i) == ')')
+				{
+					if (parenCheck.empty()) {
+						throw 1;
+					}
+					else {
+						parenCheck.pop();
+					}
+				}
+			}
+
+			if (!parenCheck.empty) {
+				throw 1;
+			}
+
+			//Parsing
+
+
+			//FROM, a single table name
+			bool found = false;
+			for (auto it = tables.begin(); it != tables.end(); ++it) {
+				if (it->first == FROM) {
+					found = true;
+				}
+			}
+			if (!found) {
+				throw "1";
+			}
+
+			//SELECT, each attribute specified by spaces
+			std::stringstream ss(SELECT);
+			std::vector<std::string> selectParse;
+
+			//std::string selectBuffer[20];
+			std::string whereBuffer[20];
+
+
+			std::string s;
+			while (ss >> s) {
+				selectParse.push_back(s);
+			}
+			ss.str(std::string()); //Clears stream
+
+			//WHERE
+			ss << WHERE;
+			i = 0;
+			while (!s.end) {
+				s >> whereBuffer[i];
+				++i;
+			}
+
+			Table* tBrady = new Table();
+			return tBrady;
+		}
+		catch (int i) {
+			std::cout << "unbalanced_parentheses" << std::endl;
+		}
+		catch (std::string i) {
+			std::cout << "table_not_found" << std::endl;
+		}
+		catch (std::exception& e) {
+			std::cout << e.what() << std::endl;
+		}
+
+		//2 more documented errors to be accounted for: empty_table (result of query) and attribute_list_error (attribute(s) is not in the table from FROM)
 	}
 }
