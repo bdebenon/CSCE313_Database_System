@@ -24,17 +24,6 @@ namespace DatabaseLibrary
 	}
 
 	//Mutator
-	//Consider: how a mutation will change the entry in the attribute->entry map
-	/*std::string& Record::operator[](size_t index)
-	{
-		try {
-			return entries.at(index);
-		}
-		catch (std::exception& e) {
-			std::cout << e.what() << std::endl;
-		}
-	}*/
-	
 	void Record::set(int i, std::string s) {
 		entries.at(i) = s;
 	}
@@ -55,7 +44,6 @@ namespace DatabaseLibrary
 			}
 		}
 	}
-	
 
 	void Record::setMap(std::vector<std::string> attributes) {
 		size_t smaller;
@@ -114,10 +102,8 @@ namespace DatabaseLibrary
 		catch (int i) {
 			switch (i) {
 			case 1: std::cout << "attribute_exists" << std::endl; break;
+			default: std::cout << "Unexpected Error" << std::endl; break;
 			}
-		}
-		catch (std::exception& e) {
-			std::cout << e.what() << std::endl;
 		}
 	}
 
@@ -133,10 +119,10 @@ namespace DatabaseLibrary
 			throw 1;
 		}
 		catch (int i) {
-			std::cout << "attribute_not_found" << std::endl;
-		}
-		catch (std::exception& e) {
-			std::cout << e.what() << std::endl;
+			switch (i) {
+			case 1: std::cout << "attribute_not_found" << std::endl; break;
+			default: std::cout << "Unexpected Error" << std::endl; break;
+			}
 		}
 	}
 
@@ -154,7 +140,10 @@ namespace DatabaseLibrary
 			records.insert(r);
 		}
 		catch (int i) {
-			std::cout << "duplicate_key_entry" << std::endl;
+			switch (i) {
+			case 1: std::cout << "duplicate_key_entry" << std::endl; break;
+			default: std::cout << "Unexpected Error" << std::endl; break;
+			}
 		}
 	}
 
@@ -182,17 +171,15 @@ namespace DatabaseLibrary
 						return r;
 					}
 				}
-				throw "1";
+				throw 2;
 			}
 		}
 		catch (int i) {
-			std::cout << "primary_key_not_set" << std::endl;
-		}
-		catch (std::string s) {
-			std::cout << "record_not_found" << std::endl;
-		}
-		catch (std::exception& e) {
-			std::cout << e.what() << std::endl;
+			switch (i) {
+			case 1: std::cout << "primary_key_not_set" << std::endl; break;
+			case 2: std::cout << "record_not_found" << std::endl; break;
+			default: std::cout << "Unexpected Error" << std::endl; break;
+			}
 		}
 	}
 
@@ -224,10 +211,10 @@ namespace DatabaseLibrary
 			}
 		}
 		catch (int i) {
-			std::cout << "attribute_not_found" << std::endl;
-		}
-		catch (std::exception& e) {
-			std::cout << e.what() << std::endl;
+			switch (i) {
+			case 1: std::cout << "attribute_not_found" << std::endl; break;
+			default: std::cout << "Unexpected Error" << std::endl; break;
+			}
 		}
 	}
 
@@ -338,12 +325,11 @@ namespace DatabaseLibrary
 
 		}
 		catch (int i) {
-			std::cout << "Tables not a match" << std::endl;
+			switch (i) {
+			case 1: std::cout << "Tables not a match" << std::endl; break;
+			default: std::cout << "Unexpected Error" << std::endl; break;
+			}
 		}
-		catch (std::exception& e) {
-			std::cout << e.what() << std::endl;
-		}
-
 	}
 
 	size_t Table::count(std::string attribName)
@@ -365,10 +351,10 @@ namespace DatabaseLibrary
 			}
 		}
 		catch (int i) {
-			std::cout << "attribute_not_found" << std::endl;
-		}
-		catch (std::exception& e) {
-			std::cout << e.what() << std::endl;
+			switch (i) {
+			case 1: std::cout << "attribute_not_found" << std::endl; break;
+			default: std::cout << "Unexpected Error" << std::endl; break;
+			}
 		}
 	}
 
@@ -662,13 +648,12 @@ namespace DatabaseLibrary
 				tables.erase(name);
 			}
 		}
-		catch (int i){
-			std::cout << "table_not_found" << std::endl;
+		catch (int i) { 
+			switch (i) {
+			case 1: std::cout << "table_not_found" << std::endl; break;
+			default: std::cout << "Unexpected Error" << std::endl; break;
+			}
 		}
-		catch (std::exception& e) {
-			std::cout << e.what() << std::endl;
-		}
-
 	}
 
 	std::vector<std::string> Database::printTableNames()
@@ -724,7 +709,7 @@ namespace DatabaseLibrary
 				}
 			}
 			if (!found) {
-				throw "1";
+				throw 2;
 			}
 
 			//WHERE
@@ -748,13 +733,11 @@ namespace DatabaseLibrary
 			return returnTable;
 		}
 		catch (int i) {
-			std::cout << "unbalanced_parentheses" << std::endl;
-		}
-		catch (std::string i) {
-			std::cout << "table_not_found" << std::endl;
-		}
-		catch (std::exception& e) {
-			std::cout << e.what() << std::endl;
+			switch (i) {
+			case 1: std::cout << "unbalanced_parentheses" << std::endl; break;
+			case 2: std::cout << "table_not_found" << std::endl; break;
+			default: std::cout << "Unexpected Error" << std::endl; break;
+			}
 		}
 
 		//2 more documented errors to be accounted for: empty_table (result of query) and attribute_list_error (attribute(s) is not in the table from FROM)

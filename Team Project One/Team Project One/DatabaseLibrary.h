@@ -1,4 +1,5 @@
 //DatabaseLibrary.h - Contains declaration of Function class  
+#pragma once 
 #include<set>
 #include<map>
 #include<exception>
@@ -6,7 +7,7 @@
 #include<vector>
 #include<sstream>
 #include<stack>
-#pragma once  
+#include<string> 
 
 #define DATABASELIBRARY_API __declspec(dllexport)   
 
@@ -22,7 +23,7 @@ namespace DatabaseLibrary
 		DATABASELIBRARY_API ~Record();
 		DATABASELIBRARY_API size_t getSize();
 		//DATABASELIBRARY_API std::string& operator[](size_t index);
-		DATABASELIBRARY_API void Record::set(int i, std::string s);
+		DATABASELIBRARY_API void set(int i, std::string s);
 		DATABASELIBRARY_API std::string const& operator[](size_t index) const;
 		DATABASELIBRARY_API void setMap(std::vector<std::string> attributes);
 		DATABASELIBRARY_API std::string getKeyVal(std::string s);
@@ -36,17 +37,20 @@ namespace DatabaseLibrary
 		std::set<Record*> records;
 		std::string key;
 		int keyIndex;
+		DATABASELIBRARY_API std::vector<Record*> stringComparison(std::string s);
+		DATABASELIBRARY_API std::vector<Record*> booleanComparison(std::vector<Record*> v1, std::vector<Record*> v2, char op);
+		DATABASELIBRARY_API std::pair<std::string, std::string> Table::splitString(std::string, int i, int length);
 	public:
 		DATABASELIBRARY_API Table(); //Create table with no rows or columns
 		DATABASELIBRARY_API Table(std::vector<std::string> names); //attribute names
 		DATABASELIBRARY_API void addAttribute(std::string name);	//adds column to END of table with that new attrib
-																		//entries currently in table get NULL for this attrib
+																	//entries currently in table get NULL for this attrib
 		DATABASELIBRARY_API void deleteAttribute(std::string name);
 		DATABASELIBRARY_API void insertRecord(Record* r);
 		DATABASELIBRARY_API std::vector<std::string> getAttributes(); //Returns a list of the attributes for a table, in order
 		DATABASELIBRARY_API size_t getSize(); //returns number of records
 		DATABASELIBRARY_API Record* getRecord(std::string k);	//An iterator of some sort that can be used to return individual records from the 
-																		//table. There are many ways this can be done.
+																//table. There are many ways this can be done.
 		DATABASELIBRARY_API std::set<Record*> getRecords();
 		DATABASELIBRARY_API void setKey(std::string attribName); //Allows attribute name to be designeded as a key for the table
 		DATABASELIBRARY_API std::string getKey();
@@ -56,10 +60,6 @@ namespace DatabaseLibrary
 		DATABASELIBRARY_API std::string getMax(std::string attribName);
 		DATABASELIBRARY_API std::string getMin(std::string attribName);
 		DATABASELIBRARY_API std::vector<Record*> whereParse(std::string s);
-	private:
-		DATABASELIBRARY_API std::vector<Record*> stringComparison(std::string s);
-		DATABASELIBRARY_API std::vector<Record*> booleanComparison(std::vector<Record*> v1, std::vector<Record*> v2, char op);
-		DATABASELIBRARY_API std::pair<std::string, std::string> Table::splitString(std::string, int i, int length);
 	};
 
 	// This class is exported from the MathLibrary.dll  
@@ -73,7 +73,7 @@ namespace DatabaseLibrary
 		DATABASELIBRARY_API std::vector<std::string> printTableNames();
 		DATABASELIBRARY_API std::map<std::string, Table*> getTables();
 		DATABASELIBRARY_API Table* query(std::string SELECT, std::string FROM, std::string WHERE); //See Note (2) at bottom
-		
+
 	};
 
 }
