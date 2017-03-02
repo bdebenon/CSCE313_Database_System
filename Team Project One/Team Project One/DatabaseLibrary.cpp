@@ -25,19 +25,22 @@ namespace DatabaseLibrary
 
 	//Mutator
 	//Consider: how a mutation will change the entry in the attribute->entry map
-	std::string& Record::operator[](size_t index)
+	/*std::string& Record::operator[](size_t index)
 	{
 		try {
-			entries.at(index);
+			return entries.at(index);
 		}
 		catch (std::exception& e) {
 			std::cout << e.what() << std::endl;
 		}
+	}*/
+	
+	void Record::set(int i, std::string s) {
+		entries.at(i) = s;
 	}
-
-	/*
+	
 	//Access
-	const std::string& Record::operator[](size_t index) const {
+	std::string const& Record::operator[](size_t index) const {
 		try {
 			if (index<size) {
 				return entries[index];
@@ -47,13 +50,12 @@ namespace DatabaseLibrary
 			}
 		}
 		catch (int i) {
-			std::cout << "out_of_bounds" << std::endl;
-		}
-		catch (std::exception& e) {
-			std::cout << e.what() << std::endl;
+			switch (i) {
+			case 1: std::cout << "out_of_bounds" << std::endl; break;
+			}
 		}
 	}
-	*/
+	
 
 	void Record::setMap(std::vector<std::string> attributes) {
 		int smaller;
@@ -241,9 +243,10 @@ namespace DatabaseLibrary
 
 		Table* tableEntry = new Table(attr);
 		Record* insertion;
-
-		for (auto it1 = r1.begin(); it1 != r1.end(); ++it1) {
-			for (auto it2 = r2.begin; it2 != r2.end(); ++it2) {
+		auto it1 = r1.begin();
+		for (it1; it1 != r1.end(); ++it1) {
+			auto it2 = r2.begin();
+			for (it2; it2 != r2.end(); ++it2) {
 				insertion = new Record((*it1)->getSize() + (*it2)->getSize());
 				for (int k = 0; k < t1->getAttributes().size(); ++k) {
 					insertion[k] = (*it1)[k];
@@ -305,17 +308,17 @@ namespace DatabaseLibrary
 								insertion = new Record((*it1)->getSize() + (*it2)->getSize());
 								std::string s = (*it2)->getKeyVal(k);
 								int i = 0;
-								(*insertion)[i] = s;
+								(*insertion).set(i, s);
 
 								for (int i = 0; i < attr.size(); ++i) {
 									for (auto it = (*it1)->attr_begin(); it != (*it1)->attr_end(); ++it) {
 										if (attr[i] == it->first && attr[i] != s) {
-											(*insertion)[i] = it->second;
+											(*insertion).set(i, it->second);
 										}
 									}
 									for (auto it = (*it2)->attr_begin(); it != (*it2)->attr_end(); ++it) {
 										if (attr[i] == it->first && attr[i] != s) {
-											(*insertion)[i] = it->second;
+											(*insertion).set(i, it->second);
 										}
 									}
 								}
@@ -552,10 +555,11 @@ namespace DatabaseLibrary
 			}
 		}
 		}
+		return v;
 	}
 
 
-	std::vector<Record*> Table::parse(std::string s) {
+	std::vector<Record*> Table::whereParse(std::string s) {
 		int par = 0;
 		int b = 0;
 		for (int i = 0; i < s.size(); ++i) {
@@ -577,7 +581,7 @@ namespace DatabaseLibrary
 						for (int j = i + 4; j < s.size(); j++) {
 							right = right + s[j];
 						}
-						return booleanComparison(parse(left), parse(right), 'A');
+						return booleanComparison(whereParse(left), whereParse(right), 'A');
 					}
 					else {
 						++b;
@@ -595,7 +599,7 @@ namespace DatabaseLibrary
 						for (int j = i + 4; j < s.size(); j++) {
 							right = right + s[j];
 						}
-						return booleanComparison(parse(left), parse(right), 'N');
+						return booleanComparison(whereParse(left), whereParse(right), 'N');
 					}
 					else {
 						++b;
@@ -613,7 +617,7 @@ namespace DatabaseLibrary
 						for (int j = i + 3; j < s.size(); j++) {
 							right = right + s[j];
 						}
-						return booleanComparison(parse(left), parse(right), 'O');
+						return booleanComparison(whereParse(left), whereParse(right), 'O');
 					}
 					else {
 						++b;
@@ -627,7 +631,7 @@ namespace DatabaseLibrary
 			for (int i = 1; i < s.size() - 1; ++i) {
 				s2 = s2 + s[i];
 			}
-			return parse(s2);
+			return whereParse(s2);
 		}
 		else {
 			return stringComparison(s);
@@ -704,48 +708,42 @@ namespace DatabaseLibrary
 				}
 			}
 
-			if (!parenCheck.empty) {
+			if (!parenCheck.empty()) {
 				throw 1;
 			}
 
-			//Parsing
-
-
 			//FROM, a single table name
 			bool found = false;
-			for (auto it = tables.begin(); it != tables.end(); ++it) {
+			auto it = tables.begin();
+			for (it; it != tables.end(); ++it) {
 				if (it->first == FROM) {
 					found = true;
+					break;
 				}
 			}
 			if (!found) {
 				throw "1";
 			}
 
+			//WHERE
+			std::vector<Record*> fetchedRecords = it->second->whereParse(WHERE);
+
 			//SELECT, each attribute specified by spaces
 			std::stringstream ss(SELECT);
 			std::vector<std::string> selectParse;
-
-			//std::string selectBuffer[20];
-			std::string whereBuffer[20];
-
-
-			std::string s;
-			while (ss >> s) {
-				selectParse.push_back(s);
+			std::string tempString;
+			while (!ss.eof()) {
+				ss >> tempString;
+				selectParse.push_back(tempString);
 			}
-			ss.str(std::string()); //Clears stream
-
-			//WHERE
-			ss << WHERE;
-			i = 0;
-			while (!s.end) {
-				s >> whereBuffer[i];
-				++i;
+			Table *returnTable = new Table(it->second->getAttributes());
+			for (int i = 0; i < fetchedRecords.size(); ++i) {
+				returnTable->insertRecord(fetchedRecords.at(i));
 			}
-
-			Table* tBrady = new Table();
-			return tBrady;
+			for (int i = 0; i < selectParse.size(); ++i) {
+				returnTable->deleteAttribute(selectParse.at(i));
+			}
+			return returnTable;
 		}
 		catch (int i) {
 			std::cout << "unbalanced_parentheses" << std::endl;

@@ -21,8 +21,9 @@ namespace DatabaseLibrary
 		DATABASELIBRARY_API Record(size_t s);
 		DATABASELIBRARY_API ~Record();
 		DATABASELIBRARY_API size_t getSize();
-		DATABASELIBRARY_API std::string& operator[](size_t index);
-		DATABASELIBRARY_API const std::string& operator[](size_t index) const;
+		//DATABASELIBRARY_API std::string& operator[](size_t index);
+		DATABASELIBRARY_API void Record::set(int i, std::string s);
+		DATABASELIBRARY_API std::string const& operator[](size_t index) const;
 		DATABASELIBRARY_API void setMap(std::vector<std::string> attributes);
 		DATABASELIBRARY_API std::string getKeyVal(std::string s);
 		DATABASELIBRARY_API std::map<std::string, std::string>::iterator attr_begin();
@@ -54,9 +55,10 @@ namespace DatabaseLibrary
 		DATABASELIBRARY_API size_t count(std::string attribName); //Counts non-null entries
 		DATABASELIBRARY_API std::string getMax(std::string attribName);
 		DATABASELIBRARY_API std::string getMin(std::string attribName);
+		DATABASELIBRARY_API std::vector<Record*> whereParse(std::string s);
+	private:
 		DATABASELIBRARY_API std::vector<Record*> stringComparison(std::string s);
-		DATABASELIBRARY_API std::vector<Record*> booleanComparison(std::vector<Record*> v1, std::vector<Record*> v2, std::string op);
-		DATABASELIBRARY_API std::vector<Record*> parse(std::string s);
+		DATABASELIBRARY_API std::vector<Record*> booleanComparison(std::vector<Record*> v1, std::vector<Record*> v2, char op);
 		DATABASELIBRARY_API std::pair<std::string, std::string> Table::splitString(std::string, int i, int length);
 	};
 
