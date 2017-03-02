@@ -58,7 +58,7 @@ namespace DatabaseLibrary
 	
 
 	void Record::setMap(std::vector<std::string> attributes) {
-		int smaller;
+		size_t smaller;
 		if (attributes.size() < getSize()) {
 			smaller = attributes.size();
 		}
@@ -112,7 +112,9 @@ namespace DatabaseLibrary
 			attributes.push_back(name);
 		}
 		catch (int i) {
-			std::cout << "attribute_exists" << std::endl;
+			switch (i) {
+			case 1: std::cout << "attribute_exists" << std::endl; break;
+			}
 		}
 		catch (std::exception& e) {
 			std::cout << e.what() << std::endl;
