@@ -22,7 +22,6 @@ namespace DatabaseLibrary
 		DATABASELIBRARY_API Record(size_t s);
 		DATABASELIBRARY_API ~Record();
 		DATABASELIBRARY_API size_t getSize();
-		//DATABASELIBRARY_API std::string& operator[](size_t index);
 		DATABASELIBRARY_API void set(int i, std::string s);
 		DATABASELIBRARY_API std::string const& operator[](size_t index) const;
 		DATABASELIBRARY_API void setMap(std::vector<std::string> attributes);

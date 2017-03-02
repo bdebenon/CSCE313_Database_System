@@ -64,7 +64,7 @@ namespace DatabaseLibrary
 		if (it == attrEntryMap.end() || attrEntryMap[s] == "-1") {
 			return "-1";
 		}
-		else{
+		else {
 			return attrEntryMap[s];
 		}
 	}
@@ -192,7 +192,7 @@ namespace DatabaseLibrary
 		//Consider: when setting a key to an established table, with duplicate entries for that key to-be set
 		try {
 			bool exists = false;
-			int index;
+			int index = 0;
 			for (auto it = attributes.begin(); it != attributes.end(); ++it) {
 				index++;
 				if (*it == attribName) {
