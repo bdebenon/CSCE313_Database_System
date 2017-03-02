@@ -7,9 +7,10 @@ namespace DatabaseLibrary
 	Record::Record(size_t s)
 	{
 		size = s;
+		std::string default = "-1";
 		if (size != 0) {
 			for (int i = 0; i < size; i++) {
-				entries[i] = "-1";
+				entries.push_back(default);
 			}		
 		}
 	}
@@ -18,6 +19,16 @@ namespace DatabaseLibrary
 		entries.clear();
 	}
 
+	/*void Record::initilizeRecord(size_t s) {
+		size = s;
+		std::string default = "-1";
+		if (size != 0) {
+			for (int i = 0; i < size; i++) {
+				//entries.push_back(default);
+			}
+		}
+	}*/
+
 	size_t Record::getSize()
 	{
 		return size;
@@ -25,7 +36,17 @@ namespace DatabaseLibrary
 
 	//Mutator
 	void Record::set(int i, std::string s) {
-		entries.at(i) = s;
+		try {
+			if (i < entries.size() && i >= 0)
+				entries.at(i) = s;
+			else
+				throw 1; //INVALID TEST NUMBER SPECIFIED
+		}
+		catch (int i) {
+			switch (i) {
+			case 1: std::cout << "Invalid Insertion at Index." << std::endl; break;
+			}
+		}
 	}
 	
 	//Access
@@ -226,9 +247,13 @@ namespace DatabaseLibrary
 	{
 		std::set<Record*> r1 = t1->getRecords();
 		std::set<Record*> r2 = t2->getRecords();
+		std::vector<std::string> v2 = t2->getAttributes();
 
 		std::vector<std::string> attr = t1->getAttributes();
-		attr.insert(attr.end(), t2->getAttributes().begin(), t2->getAttributes().end());
+		//attr.insert(attr.end(), t2->getAttributes().begin(), t2->getAttributes().end());
+		for (int i = 0; i < t2->getAttributes().size(); ++i) {
+			attr.push_back(v2[i]);
+		}
 
 		Table* tableEntry = new Table(attr);
 		Record* insertion;
@@ -238,10 +263,10 @@ namespace DatabaseLibrary
 			for (it2; it2 != r2.end(); ++it2) {
 				insertion = new Record((*it1)->getSize() + (*it2)->getSize());
 				for (int k = 0; k < t1->getAttributes().size(); ++k) {
-					insertion[k] = (*it1)[k];
+					insertion->set(k, (**it1)[k]);
 				}
 				for (int l = 0; l < t2->getAttributes().size(); ++l) {
-					insertion[l + t1->getAttributes().size()] = (*it2)[l];
+					insertion->set(l + t1->getAttributes().size(), (**it2)[l]);
 				}
 				tableEntry->insertRecord(insertion);
 			}
@@ -260,9 +285,10 @@ namespace DatabaseLibrary
 			}
 			else {
 				std::string k2 = "-1";
-				for (auto it = t1->getAttributes().begin(); it != t1->getAttributes().end(); ++it) {
-					if (*it == k) {
-						k2 = *it;
+				std::vector<std::string> v1 = t1->getAttributes();
+				for (int i = 0; i < v1.size(); ++i) {
+					if (v1[i] == k) {
+						k2 = i;
 						break;
 					}
 				}
@@ -276,15 +302,16 @@ namespace DatabaseLibrary
 
 					attr.push_back(k);
 					//adds elements of t1 to the attribute list
-					for (auto it = t1->getAttributes().begin(); it != t1->getAttributes().end(); ++it) {
-						if (*it != k) {
-							attr.push_back(*it);
+					for (int i = 0; i < v1.size(); ++i) {
+						if (v1[i] != k) {
+							attr.push_back(v1[i]);
 						}
 					}
+					std::vector<std::string> v2 = t2->getAttributes();
 					//adds elements of t2 to the attribute list
-					for (auto it = t2->getAttributes().begin(); it != t2->getAttributes().end(); ++it) {
-						if (*it != k) {
-							attr.push_back(*it);
+					for (int i = 0; i < v2.size(); ++i) {
+						if (v2[i] != k) {
+							attr.push_back(v2[i]);
 						}
 					}
 					Table* tableEntry = new Table(attr);
@@ -311,18 +338,13 @@ namespace DatabaseLibrary
 										}
 									}
 								}
-
-
 								tableEntry->insertRecord(insertion);
 							}
 						}
 					}
-
+					return tableEntry;
 				}
-
 			}
-
-
 		}
 		catch (int i) {
 			switch (i) {
@@ -421,100 +443,100 @@ namespace DatabaseLibrary
 			return stringComparison(s2);
 		}
 		else {
+			std::pair<std::string, std::string> p;
+			std::string attr;
+			std::string cond;
 			for (int i = 0; i < s.size(); ++i) {
 				switch (s[i]) {
-				case '=': {
-					std::pair<std::string, std::string> p = splitString(s, i, 1);
-					std::string attr = p.first;
-					std::string cond = p.second;
+				case '=':
+					p = splitString(s, i, 1);
+					attr = p.first;
+					cond = p.second;
 					for (auto it = records.begin(); it != records.end(); ++it) {
 						if ((*it)->getKeyVal(attr) == cond) {
 							v.push_back(*it);
 						}
 					}
-				}
-				case '<': {
-					switch (s[i+1]) {
-					case '>': { //not equal
-						std::pair<std::string, std::string> p = splitString(s, i, 2);
-						std::string attr = p.first;
-						std::string cond = p.second;
+					return v;
+				case '<':
+					switch (s[i + 1]) {
+					case '>': //not equal
+						p = splitString(s, i, 2);
+						attr = p.first;
+						cond = p.second;
 						for (auto it = records.begin(); it != records.end(); ++it) {
 							if ((*it)->getKeyVal(attr) != cond) {
 								v.push_back(*it);
 							}
 						}
-					}
-					case '=':{
-						std::pair<std::string, std::string> p = splitString(s, i, 2);
-						std::string attr = p.first;
-						std::string cond = p.second;
+						return v;
+					case '=':
+						p = splitString(s, i, 2);
+						attr = p.first;
+						cond = p.second;
 						for (auto it = records.begin(); it != records.end(); ++it) {
 							if ((*it)->getKeyVal(attr) <= cond) {
 								v.push_back(*it);
 							}
 						}
-					}
-					default: {
-						std::pair<std::string, std::string> p = splitString(s, i, 1);
-						std::string attr = p.first;
-						std::string cond = p.second;
+						return v;
+					default:
+						p = splitString(s, i, 1);
+						attr = p.first;
+						cond = p.second;
 						for (auto it = records.begin(); it != records.end(); ++it) {
 							if ((*it)->getKeyVal(attr) < cond) {
 								v.push_back(*it);
 							}
 						}
-
+						return v;
 					}
-					}
-				}
-				case '>':{
+					break;
+				case '>':
 					switch (s[i + 1]) {
-					case '=': {
-						std::pair<std::string, std::string> p = splitString(s, i, 2); 
-						std::string attr = p.first;
-						std::string cond = p.second;
+					case '=':
+						p = splitString(s, i, 2);
+						attr = p.first;
+						cond = p.second;
 						for (auto it = records.begin(); it != records.end(); ++it) {
 							if ((*it)->getKeyVal(attr) >= cond) {
 								v.push_back(*it);
 							}
 						}
-
-					}
-					default: {
-						std::pair<std::string, std::string> p = splitString(s, i, 1);
-						std::string attr = p.first;
-						std::string cond = p.second;
+						return v;
+					default:
+						p = splitString(s, i, 1);
+						attr = p.first;
+						cond = p.second;
 						for (auto it = records.begin(); it != records.end(); ++it) {
 							if ((*it)->getKeyVal(attr) > cond) {
 								v.push_back(*it);
 							}
 						}
+						return v;
 					}
-
-					}
-
+					break;
 				}
-				}
-			}
-		}
+			} //End For Loop
+		} //END ELSE
+		return v;
 	}
 
 	std::vector<Record*> Table::booleanComparison(std::vector<Record*> v1, std::vector<Record*> v2, char op) {
 		std::vector<Record*> v;
+		bool check;
 		switch (op) {
-		case 'A': {
+		case 'A':
 			for (int i = 0; i < v1.size(); ++i) {
 				for (int j = 0; j < v2.size(); ++j) {
 					if (v1[i] == v2[j]) {
 						v.push_back(v1[i]);
-						break;
 					}
 				}
 			}
-		}
-		case 'N': {
-			bool check = false;
+			return v;
+		case 'N':
+			check = false;
 			for (int i = 0; i < v1.size(); ++i) {
 				for (int j = 0; j < v2.size(); ++j) {
 					if (v1[i] == v2[j]) {
@@ -526,13 +548,13 @@ namespace DatabaseLibrary
 				}
 				check = false;
 			}
-		}
-		case 'O': {
-			bool check = false;
+			return v;
+		case 'O': 
+			check = false;
 			v = v1;
 			for (int i = 0; i < v2.size(); ++i) {
-				for (int j = 0; j < v.size(); ++i) {
-					if (v[i] == v2[j]) {
+				for (int j = 0; j < v.size(); ++j) {
+					if (v[j] == v2[i]) {
 						check = true;
 					}
 				}
@@ -541,7 +563,7 @@ namespace DatabaseLibrary
 				}
 				check = false;
 			}
-		}
+			return v;
 		}
 		return v;
 	}
@@ -552,66 +574,72 @@ namespace DatabaseLibrary
 		int b = 0;
 		for (int i = 0; i < s.size(); ++i) {
 			switch (s[i]) {
-			case '(': {
+			case '(':
 				++par;
-			}
-			case ')': {
+				break;
+			case ')':
 				--par;
-			}
-			case 'A': {
-				if (s[i - 1] == ' ' && s[i + 1] == 'N' && s[i + 2] == 'D' && s[i + 3] == ' ') {
-					if (par == 0) {
-						std::string left = "";
-						std::string right = "";
-						for (int j = 0; j < i - 1; j++) {
-							left = left + s[j];
+				break;
+			case 'A':
+				if(i > 0 && s.size() > 3) {
+					if (s[i - 1] == ' ' && s[i + 1] == 'N' && s[i + 2] == 'D' && s[i + 3] == ' ') {
+						if (par == 0) {
+							std::string left = "";
+							std::string right = "";
+							for (int j = 0; j < i - 1; j++) {
+								left = left + s[j];
+							}
+							for (int j = i + 4; j < s.size(); j++) {
+								right = right + s[j];
+							}
+							return booleanComparison(whereParse(left), whereParse(right), 'A');
 						}
-						for (int j = i + 4; j < s.size(); j++) {
-							right = right + s[j];
+						else {
+							++b;
 						}
-						return booleanComparison(whereParse(left), whereParse(right), 'A');
 					}
-					else {
-						++b;
-					}
-				}
-			}
-			case 'N': {
-				if (s[i - 1] == ' ' && s[i + 1] == 'O' && s[i + 2] == 'T' && s[i + 3] == ' ') {
-					if (par == 0) {
-						std::string left = "";
-						std::string right = "";
-						for (int j = 0; j < i - 1; j++) {
-							left = left + s[j];
+				} //MAYBE ELSE NEEDED?
+				break;
+			case 'N':
+				if (i > 0 && s.size() > 3) {
+					if (s[i - 1] == ' ' && s[i + 1] == 'O' && s[i + 2] == 'T' && s[i + 3] == ' ') {
+						if (par == 0) {
+							std::string left = "";
+							std::string right = "";
+							for (int j = 0; j < i - 1; j++) {
+								left = left + s[j];
+							}
+							for (int j = i + 4; j < s.size(); j++) {
+								right = right + s[j];
+							}
+							return booleanComparison(whereParse(left), whereParse(right), 'N');
 						}
-						for (int j = i + 4; j < s.size(); j++) {
-							right = right + s[j];
+						else {
+							++b;
 						}
-						return booleanComparison(whereParse(left), whereParse(right), 'N');
-					}
-					else {
-						++b;
-					}
-				}
-			}
-			case 'O': {
-				if (s[i - 1] == ' ' && s[i + 1] == 'R' && s[i + 3] == ' ') {
-					if (par == 0) {
-						std::string left = "";
-						std::string right = "";
-						for (int j = 0; j < i - 1; j++) {
-							left = left + s[j];
-						}
-						for (int j = i + 3; j < s.size(); j++) {
-							right = right + s[j];
-						}
-						return booleanComparison(whereParse(left), whereParse(right), 'O');
-					}
-					else {
-						++b;
 					}
 				}
-			}
+				break;
+			case 'O':
+				if (i > 0 && s.size() > 2) {
+					if (s[i - 1] == ' ' && s[i + 1] == 'R' && s[i + 2] == ' ') {
+						if (par == 0) {
+							std::string left = "";
+							std::string right = "";
+							for (int j = 0; j < i - 1; j++) {
+								left = left + s[j];
+							}
+							for (int j = i + 3; j < s.size(); j++) {
+								right = right + s[j];
+							}
+							return booleanComparison(whereParse(left), whereParse(right), 'O');
+						}
+						else {
+							++b;
+						}
+					}
+				}
+				break;
 			}
 		}
 		if (b > 0) {
@@ -679,7 +707,7 @@ namespace DatabaseLibrary
 		try {
 			//Checks for balanced parentheses
 			std::stack<char> parenCheck;
-
+			std::cout << "Begin Query" << std::endl;
 			for (int i = 0; i < WHERE.length(); i++) {
 				if (WHERE.at(i) == '(') {
 					parenCheck.push('(');
@@ -694,11 +722,12 @@ namespace DatabaseLibrary
 					}
 				}
 			}
+			std::cout << "Query 2" << std::endl;
 
 			if (!parenCheck.empty()) {
 				throw 1;
 			}
-
+			std::cout << "Query 3" << std::endl;
 			//FROM, a single table name
 			bool found = false;
 			auto it = tables.begin();
@@ -711,9 +740,12 @@ namespace DatabaseLibrary
 			if (!found) {
 				throw 2;
 			}
+			std::cout << "Query 4" << std::endl;
 
 			//WHERE
 			std::vector<Record*> fetchedRecords = it->second->whereParse(WHERE);
+
+			std::cout << "Query 5" << std::endl;
 
 			//SELECT, each attribute specified by spaces
 			std::stringstream ss(SELECT);
@@ -723,13 +755,15 @@ namespace DatabaseLibrary
 				ss >> tempString;
 				selectParse.push_back(tempString);
 			}
-			Table *returnTable = new Table(it->second->getAttributes());
+			std::cout << "Query 6" << std::endl;
+			Table *returnTable = new Table(selectParse);
+			std::cout << "Query 7" << std::endl;
 			for (int i = 0; i < fetchedRecords.size(); ++i) {
 				returnTable->insertRecord(fetchedRecords.at(i));
 			}
-			for (int i = 0; i < selectParse.size(); ++i) {
+			/*for (int i = 0; i < selectParse.size(); ++i) {
 				returnTable->deleteAttribute(selectParse.at(i));
-			}
+			}*/
 			return returnTable;
 		}
 		catch (int i) {

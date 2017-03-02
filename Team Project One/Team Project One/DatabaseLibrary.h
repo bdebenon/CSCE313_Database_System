@@ -1,5 +1,12 @@
 //DatabaseLibrary.h - Contains declaration of Function class  
 #pragma once 
+
+#ifdef DATABASELIBRARY_EXPORTS  
+#define DATABASELIBRARY_API __declspec(dllexport)   
+#else  
+#define DATABASELIBRARY_API __declspec(dllimport)   
+#endif  
+
 #include<set>
 #include<map>
 #include<exception>
@@ -9,7 +16,6 @@
 #include<stack>
 #include<string> 
 
-#define DATABASELIBRARY_API __declspec(dllexport)   
 
 namespace DatabaseLibrary
 {
@@ -21,6 +27,7 @@ namespace DatabaseLibrary
 	public:
 		DATABASELIBRARY_API Record(size_t s);
 		DATABASELIBRARY_API ~Record();
+		//DATABASELIBRARY_API void initilizeRecord(size_t s);
 		DATABASELIBRARY_API size_t getSize();
 		DATABASELIBRARY_API void set(int i, std::string s);
 		DATABASELIBRARY_API std::string const& operator[](size_t index) const;
