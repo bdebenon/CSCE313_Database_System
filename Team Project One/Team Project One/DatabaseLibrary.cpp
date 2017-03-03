@@ -7,7 +7,7 @@ namespace DatabaseLibrary
 	Record::Record(size_t s)
 	{
 		size = s;
-		std::string default = "-1";
+		std::string default = "NIL";
 		if (size != 0) {
 			for (int i = 0; i < size; i++) {
 				entries.push_back(default);
@@ -18,16 +18,6 @@ namespace DatabaseLibrary
 	Record::~Record() {
 		entries.clear();
 	}
-
-	/*void Record::initilizeRecord(size_t s) {
-		size = s;
-		std::string default = "-1";
-		if (size != 0) {
-			for (int i = 0; i < size; i++) {
-				//entries.push_back(default);
-			}
-		}
-	}*/
 
 	size_t Record::getSize()
 	{
@@ -68,22 +58,20 @@ namespace DatabaseLibrary
 
 	void Record::setMap(std::vector<std::string> attributes) {
 		size_t smaller;
-		if (attributes.size() < getSize()) {
+		if (entries.size() > attributes.size())
 			smaller = attributes.size();
-		}
-		else {
-			smaller = getSize();
-		}
+		else
+			smaller = entries.size();
 		for (int i = 0; i < smaller; i++) {
-			attrEntryMap[attributes[i]] = entries[i];
+			attrEntryMap[attributes.at(i)] = entries.at(i);
 		}
 
 	}
 
 	std::string Record::getKeyVal(std::string s) {
 		auto it = attrEntryMap.find(s);
-		if (it == attrEntryMap.end() || attrEntryMap[s] == "-1") {
-			return "-1";
+		if (it == attrEntryMap.end() || attrEntryMap[s] == "NIL") {
+			return "NIL";
 		}
 		else {
 			return attrEntryMap[s];
@@ -98,16 +86,39 @@ namespace DatabaseLibrary
 		return attrEntryMap.end();
 	}
 
+	std::map<std::string, std::string>* Record::getAttrMap()
+	{
+		return &attrEntryMap;
+	}
+
+	std::vector<std::string>* Record::getEntries()
+	{
+		return &entries;
+	}
+
 	Table::Table()
 	{
-		key = "-1";
+		key = "NIL";
 	}
 
 	Table::Table(std::vector<std::string> names)
 	{
 		//Consider: find a way to check for duplicates
 		attributes.insert(attributes.begin(), names.begin(), names.end());
-		key = "-1";
+		key = "NIL";
+	}
+
+	void Table::refreshMap() {
+		size_t smaller;
+		for (auto it = records.begin(); it != records.end(); ++it) { //Iterate through the record vector
+			if ((*it)->getEntries()->size() > attributes.size())
+				smaller = attributes.size();
+			else
+				smaller = (*it)->getEntries()->size();
+			for (int i = 0; i < smaller; i++) {	//Iterate through all of the attributes
+				(*it)->getAttrMap()->at(attributes.at(i)) = (*it)->getEntries()->at(i);
+			}
+		}
 	}
 
 	void Table::addAttribute(std::string name)
@@ -150,7 +161,7 @@ namespace DatabaseLibrary
 	void Table::insertRecord(Record* r)
 	{
 		try {
-			if (key != "-1"){ //if it has a key, check for an addition of a duplicate key entry
+			if (key != "NIL"){ //if it has a key, check for an addition of a duplicate key entry
 				for (auto it = records.begin(); it != records.end(); ++it) {
 					if ((*it)->getKeyVal(key) == (*r)[keyIndex]) {
 						throw 1;
@@ -182,7 +193,7 @@ namespace DatabaseLibrary
 	Record* Table::getRecord(std::string k)
 	{
 		try {
-			if (key == "-1") {
+			if (key == "NIL") {
 				throw 1;
 			}
 			else {
@@ -279,12 +290,12 @@ namespace DatabaseLibrary
 	{
 		try {
 			std::string k = t2->getKey();
-			if (k == "-1") { //checks if t2 has a key
+			if (k == "NIL") { //checks if t2 has a key
 				std::cout << "Table two does not have a key" << std::endl;
 				throw 1;
 			}
 			else {
-				std::string k2 = "-1";
+				std::string k2 = "NIL";
 				std::vector<std::string> v1 = t1->getAttributes();
 				for (int i = 0; i < v1.size(); ++i) {
 					if (v1[i] == k) {
@@ -292,7 +303,7 @@ namespace DatabaseLibrary
 						break;
 					}
 				}
-				if (k2 == "-1") { //did not find attribute matching key from t1
+				if (k2 == "NIL") { //did not find attribute matching key from t1
 					throw 1;
 				}
 				else {
@@ -365,7 +376,7 @@ namespace DatabaseLibrary
 				size_t count = 0;
 				for (auto it = records.begin(); it != records.end(); ++it) {
 					Record* r = *it;
-					if (r->getKeyVal(attribName) != "-1") {
+					if (r->getKeyVal(attribName) != "NIL") {
 						count++;
 					}
 				}
@@ -380,13 +391,17 @@ namespace DatabaseLibrary
 		}
 	}
 
-	std::string Table::getMax(std::string attribName)
+	std::string Table::getMax(std::string attribName) //Does not account for "-1" records
 	{
 		//via string comparison
 		std::string max = "";
+		bool initialSet = false;
 		for (auto it = records.begin(); it != records.end(); ++it) {
-			if (it == records.begin()) {
-				max = (*it)->getKeyVal(attribName); //set max to first
+			if (initialSet == false) {
+				if ((*it)->getKeyVal(attribName) != "NIL") {
+					max = (*it)->getKeyVal(attribName); //set max to first
+					initialSet = true;
+				}
 			}
 			if ((*it)->getKeyVal(attribName) > max) { //string comparison
 				max = (*it)->getKeyVal(attribName);
@@ -400,11 +415,15 @@ namespace DatabaseLibrary
 	{
 		//via string comparison
 		std::string min = "";
+		bool initialSet = false;
 		for (auto it = records.begin(); it != records.end(); ++it) {
-			if (it == records.begin()) {
-				min = (*it)->getKeyVal(attribName); //set max to first
+			if (initialSet == false) {
+				if ((*it)->getKeyVal(attribName) != "NIL") {
+					min = (*it)->getKeyVal(attribName); //set min to first
+					initialSet = true;
+				}
 			}
-			if ((*it)->getKeyVal(attribName) < min) { //string comparison
+			if ((*it)->getKeyVal(attribName) < min && (*it)->getKeyVal(attribName) != "NIL") { //string comparison
 				min = (*it)->getKeyVal(attribName);
 			}
 		}
@@ -453,7 +472,7 @@ namespace DatabaseLibrary
 					attr = p.first;
 					cond = p.second;
 					for (auto it = records.begin(); it != records.end(); ++it) {
-						if ((*it)->getKeyVal(attr) == cond) {
+						if ((*it)->getKeyVal(attr) == cond && (*it)->getKeyVal(attr) != "NIL") {
 							v.push_back(*it);
 						}
 					}
@@ -465,7 +484,7 @@ namespace DatabaseLibrary
 						attr = p.first;
 						cond = p.second;
 						for (auto it = records.begin(); it != records.end(); ++it) {
-							if ((*it)->getKeyVal(attr) != cond) {
+							if ((*it)->getKeyVal(attr) != cond && (*it)->getKeyVal(attr) != "NIL") {
 								v.push_back(*it);
 							}
 						}
@@ -475,7 +494,7 @@ namespace DatabaseLibrary
 						attr = p.first;
 						cond = p.second;
 						for (auto it = records.begin(); it != records.end(); ++it) {
-							if ((*it)->getKeyVal(attr) <= cond) {
+							if ((*it)->getKeyVal(attr) <= cond && (*it)->getKeyVal(attr) != "NIL") {
 								v.push_back(*it);
 							}
 						}
@@ -485,7 +504,7 @@ namespace DatabaseLibrary
 						attr = p.first;
 						cond = p.second;
 						for (auto it = records.begin(); it != records.end(); ++it) {
-							if ((*it)->getKeyVal(attr) < cond) {
+							if ((*it)->getKeyVal(attr) < cond && (*it)->getKeyVal(attr) != "NIL") {
 								v.push_back(*it);
 							}
 						}
@@ -499,7 +518,7 @@ namespace DatabaseLibrary
 						attr = p.first;
 						cond = p.second;
 						for (auto it = records.begin(); it != records.end(); ++it) {
-							if ((*it)->getKeyVal(attr) >= cond) {
+							if ((*it)->getKeyVal(attr) >= cond && (*it)->getKeyVal(attr) != "NIL") {
 								v.push_back(*it);
 							}
 						}
@@ -509,7 +528,7 @@ namespace DatabaseLibrary
 						attr = p.first;
 						cond = p.second;
 						for (auto it = records.begin(); it != records.end(); ++it) {
-							if ((*it)->getKeyVal(attr) > cond) {
+							if ((*it)->getKeyVal(attr) > cond && (*it)->getKeyVal(attr) != "NIL") {
 								v.push_back(*it);
 							}
 						}
@@ -707,7 +726,6 @@ namespace DatabaseLibrary
 		try {
 			//Checks for balanced parentheses
 			std::stack<char> parenCheck;
-			std::cout << "Begin Query" << std::endl;
 			for (int i = 0; i < WHERE.length(); i++) {
 				if (WHERE.at(i) == '(') {
 					parenCheck.push('(');
@@ -722,12 +740,10 @@ namespace DatabaseLibrary
 					}
 				}
 			}
-			std::cout << "Query 2" << std::endl;
 
 			if (!parenCheck.empty()) {
 				throw 1;
 			}
-			std::cout << "Query 3" << std::endl;
 			//FROM, a single table name
 			bool found = false;
 			auto it = tables.begin();
@@ -740,12 +756,10 @@ namespace DatabaseLibrary
 			if (!found) {
 				throw 2;
 			}
-			std::cout << "Query 4" << std::endl;
 
 			//WHERE
 			std::vector<Record*> fetchedRecords = it->second->whereParse(WHERE);
 
-			std::cout << "Query 5" << std::endl;
 
 			//SELECT, each attribute specified by spaces
 			std::stringstream ss(SELECT);
@@ -755,15 +769,10 @@ namespace DatabaseLibrary
 				ss >> tempString;
 				selectParse.push_back(tempString);
 			}
-			std::cout << "Query 6" << std::endl;
 			Table *returnTable = new Table(selectParse);
-			std::cout << "Query 7" << std::endl;
 			for (int i = 0; i < fetchedRecords.size(); ++i) {
 				returnTable->insertRecord(fetchedRecords.at(i));
 			}
-			/*for (int i = 0; i < selectParse.size(); ++i) {
-				returnTable->deleteAttribute(selectParse.at(i));
-			}*/
 			return returnTable;
 		}
 		catch (int i) {

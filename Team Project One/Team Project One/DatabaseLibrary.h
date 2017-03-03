@@ -35,6 +35,8 @@ namespace DatabaseLibrary
 		DATABASELIBRARY_API std::string getKeyVal(std::string s);
 		DATABASELIBRARY_API std::map<std::string, std::string>::iterator attr_begin();
 		DATABASELIBRARY_API std::map<std::string, std::string>::iterator attr_end();
+		DATABASELIBRARY_API std::map<std::string, std::string> *getAttrMap();
+		DATABASELIBRARY_API std::vector<std::string> *getEntries();
 	};
 
 	class Table {
@@ -49,6 +51,7 @@ namespace DatabaseLibrary
 	public:
 		DATABASELIBRARY_API Table(); //Create table with no rows or columns
 		DATABASELIBRARY_API Table(std::vector<std::string> names); //attribute names
+		DATABASELIBRARY_API void refreshMap();
 		DATABASELIBRARY_API void addAttribute(std::string name);	//adds column to END of table with that new attrib
 																	//entries currently in table get NULL for this attrib
 		DATABASELIBRARY_API void deleteAttribute(std::string name);
